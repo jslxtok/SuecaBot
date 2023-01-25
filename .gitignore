@@ -1,0 +1,5 @@
+venv
+SuecaBot/database/games.db
+.env
+.vscode
+*.pyc
