@@ -1,7 +1,7 @@
 import lightbulb
 import hikari
 import SuecaBot.utils.dbhelpers
-import SuecaBot.utils.cardhelpers
+
 
 player_cmds = lightbulb.Plugin("Player Commands", "Commands for players to use")
 

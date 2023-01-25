@@ -4,6 +4,7 @@ import secrets
 import string
 import SuecaBot.utils.dbhelpers
 import SuecaBot.utils.colors
+import SuecaBot.database.dbfuncs
 
 
 game_start = lightbulb.Plugin("Game Start", "Commands to starting a game")
@@ -15,7 +16,6 @@ game_start = lightbulb.Plugin("Game Start", "Commands to starting a game")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def on_game_start(ctx: lightbulb.SlashContext) -> None:
     gameid = (''.join(secrets.choice(string.ascii_uppercase + string.ascii_lowercase) for i in range(10)))
-    is_owner = "Yes"
     async with game_start.bot.d.conn.cursor() as cursor:
         await cursor.execute(f"""CREATE TABLE IF NOT EXISTS {gameid}(
                        userid TEXT,
@@ -23,7 +23,7 @@ async def on_game_start(ctx: lightbulb.SlashContext) -> None:
                        cards TEXT,
                        trump_card TEXT
                        ) """)
-        await cursor.execute(f"INSERT INTO {gameid} (userid, owner) VALUES (?,?)", (ctx.member.id, is_owner))
+        await cursor.execute("INSERT INTO {id} (userid, owner) VALUES (?,?)".format(id=gameid), (ctx.member.id, "Yes"))
     await game_start.bot.d.conn.commit()
     await ctx.respond(f"Game created with ID: {gameid}")
 
@@ -33,13 +33,13 @@ async def on_game_start(ctx: lightbulb.SlashContext) -> None:
 @lightbulb.command("join", "Join a game", auto_defer=True)
 @lightbulb.implements(lightbulb.SlashCommand)
 async def on_game_join(ctx: lightbulb.SlashContext) -> None:
-    answer = await SuecaBot.utils.dbhelpers.game_join(id=ctx.options.id, player=str(ctx.member.id))
-    if answer == "No":
-        await ctx.respond("You are already in this game")
-    elif answer == "Game Full":
-        await ctx.respond("This game is full")
+    answer = await SuecaBot.database.dbfuncs.game_join(id=ctx.options.id, player=str(ctx.member.id))
+    if answer == "AlreadyJoined":
+        await ctx.respond("Game already Joined")
+    elif answer == "FullGame":
+        await ctx.respond("Game is full")
     else:
-        await ctx.respond("Game joined")
+        await ctx.respond("Game Joined successfully")
 
 
 @game_start.command
