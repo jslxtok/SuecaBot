@@ -4,13 +4,15 @@ import lightbulb
 
 dbfuncs = lightbulb.Plugin("DBFunctions")
 
+
 async def on_connect(db: str | Path) -> aiosqlite.Connection:
     conn = await aiosqlite.connect(f"{db}")
     return conn
 
+
 async def player_info(id: str) -> tuple:
     select = "SELECT userid, cards from {id}"
-    select = select.format(id = id)
+    select = select.format(id=id)
     async with dbfuncs.bot.d.conn.cursor() as cursor:
         await cursor.execute(select)
         
@@ -23,13 +25,15 @@ async def player_info(id: str) -> tuple:
         cards.append(row[1])
     return players, cards
 
+
 async def game_join(id: str, player: str) -> str:
     players = await player_info(id)
     if player in players[0]:
         return "AlreadyJoined"
     elif len(players[0]) <= 4:
         async with dbfuncs.bot.d.conn.cursor() as cursor:
-            await cursor.execute("INSERT INTO {id} (userid, owner) VALUES (?, ?)".format(id=id), (player, "No"))
+            await cursor.execute(f"INSERT INTO {id} (userid, owner) VALUES (?, ?)", (player, "No"))
+        await dbfuncs.bot.d.conn.commit()
         return "Joined"
     else:
         return "FullGame"
@@ -37,6 +41,7 @@ async def game_join(id: str, player: str) -> str:
 
 def load(bot: lightbulb.BotApp) -> None:
     bot.add_plugin(dbfuncs)
-    
+
+
 def unload(bot: lightbulb.BotApp) -> None:
-    bot.remove_plugin(dbfuncs)       
+    bot.remove_plugin(dbfuncs)

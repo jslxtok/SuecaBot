@@ -3,5 +3,5 @@ SuecaBot/database/games.db
 .env
 .vscode
 *.pyc
-.DS_Store
+.DS_Stor
 .idea
