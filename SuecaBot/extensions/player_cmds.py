@@ -1,5 +1,4 @@
 import lightbulb
-import hikari
 import SuecaBot.utils.dbhelpers
 
 

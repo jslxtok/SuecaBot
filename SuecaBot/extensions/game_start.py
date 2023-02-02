@@ -33,7 +33,7 @@ async def on_game_start(ctx: lightbulb.SlashContext) -> None:
 @lightbulb.command("join", "Join a game", auto_defer=True)
 @lightbulb.implements(lightbulb.SlashCommand)
 async def on_game_join(ctx: lightbulb.SlashContext) -> None:
-    answer = await SuecaBot.database.dbfuncs.game_join(id=ctx.options.id, player=str(ctx.member.id))
+    answer = await SuecaBot.database.dbfuncs.game_join(game_id=ctx.options.id, player=str(ctx.member.id))
     if answer == "AlreadyJoined":
         await ctx.respond("Game already Joined")
     elif answer == "FullGame":
@@ -80,7 +80,7 @@ async def on_game_check(ctx: lightbulb.SlashContext) -> None:
 @lightbulb.command("deal", "Deal the cards", auto_defer=True)
 @lightbulb.implements(lightbulb.SlashCommand)
 async def on_deal(ctx: lightbulb.SlashContext) -> None:
-    deal_done = await SuecaBot.utils.dbhelpers.dealing(id=ctx.options.id,player=str(ctx.member.id))
+    deal_done = await SuecaBot.utils.dbhelpers.dealing(id=ctx.options.id, player=str(ctx.member.id))
     players = await SuecaBot.utils.dbhelpers.player_count(ctx.options.id)
     
     if deal_done == "Done":

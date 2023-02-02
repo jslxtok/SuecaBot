@@ -4,6 +4,7 @@ import SuecaBot.utils.ruleembeds
 import miru
 from miru.ext import nav
 
+
 class MyNavButton(nav.NavButton):
 
     async def callback(self, ctx: miru.ViewContext) -> None:

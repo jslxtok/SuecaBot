@@ -1,4 +1,3 @@
-import hikari
 import lightbulb
 
 
@@ -23,6 +22,7 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
 
 def load(bot: lightbulb.BotApp) -> None:
     bot.add_plugin(errors)
+
 
 def unload(bot: lightbulb.BotApp) -> None:
     bot.add_plugin(errors)

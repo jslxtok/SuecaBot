@@ -13,7 +13,7 @@ bot = lightbulb.BotApp(
 
 
 @bot.listen(hikari.StartedEvent)
-async def on_start(event: hikari.StartedEvent) -> None:
+async def on_start(_: hikari.StartedEvent) -> None:
     print("Bot started")
     
     bot.d.conn = await on_connect("./SuecaBot/database/games.db")
@@ -34,7 +34,7 @@ async def on_test(ctx: lightbulb.Context) -> None:
 
 
 @bot.listen(hikari.StoppedEvent)
-async def on_stop(event: hikari.StoppedEvent) -> None:
+async def on_stop(_: hikari.StoppedEvent) -> None:
     await bot.d.conn.close()
     print("Bot stopped")
     
