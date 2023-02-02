@@ -5,3 +5,4 @@ SuecaBot/database/games.db
 *.pyc
 .DS_Stor
 .idea
+.toml
