@@ -29,6 +29,7 @@ info3 = (
     )
 )
 
+
 def get_info_list():
     info_list = [info1, info2, info3]
     return info_list

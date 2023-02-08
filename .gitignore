@@ -5,3 +5,5 @@ SuecaBot/database/games.db
 *.pyc
 .DS_Store
 .idea
+.dockerignore
+fly.toml
