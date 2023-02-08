@@ -2,7 +2,6 @@ import hikari
 import lightbulb
 import secrets
 import string
-import SuecaBot.utils.dbhelpers
 import SuecaBot.utils.colors
 import SuecaBot.database.dbfuncs
 
@@ -60,15 +59,17 @@ async def on_column_add(ctx: lightbulb.SlashContext) -> None:
 @lightbulb.command("info", "Get information about a game", auto_defer=True)
 @lightbulb.implements(lightbulb.SlashCommand)
 async def on_game_check(ctx: lightbulb.SlashContext) -> None:
-    players = await SuecaBot.utils.dbhelpers.player_count(ctx.options.id)
+    players = await SuecaBot.database.dbfuncs.player_info(game_id=ctx.options.id)
     parsed_players = [f"<@{i}>" for i in players[0]]
+    trump_card_pile = players[1][0]
+    trump_card = trump_card_pile.split(" ")[0]
     info_embed = hikari.Embed(
         title=f"Game information: {ctx.options.id}",
         description=f"Players: {len(players[0])}/4",
         color=SuecaBot.utils.colors.get_color()
     )
     info_embed.add_field("Player Names", " | ".join(parsed_players) if parsed_players else "No players")
-    info_embed.add_field("Trump Card", str(players[1]), inline=True)
+    info_embed.add_field("Trump Card", trump_card, inline=True)
     info_embed.add_field("Game Dealer", f"<@{players[0][0]}>", inline=True)
     if len(parsed_players) == 4:
         info_embed.add_field("Teams", f"Team 1: {parsed_players[0]}, {parsed_players[2]}\nTeam 2: {parsed_players[1]}, {parsed_players[3]}")
@@ -80,15 +81,17 @@ async def on_game_check(ctx: lightbulb.SlashContext) -> None:
 @lightbulb.command("deal", "Deal the cards", auto_defer=True)
 @lightbulb.implements(lightbulb.SlashCommand)
 async def on_deal(ctx: lightbulb.SlashContext) -> None:
-    deal_done = await SuecaBot.utils.dbhelpers.dealing(id=ctx.options.id, player=str(ctx.member.id))
-    players = await SuecaBot.utils.dbhelpers.player_count(ctx.options.id)
+    deal_done = await SuecaBot.database.dbfuncs.dealing(game_id=ctx.options.id, player=str(ctx.author.id))
+    players = await SuecaBot.database.dbfuncs.player_info(ctx.options.id)
     
     if deal_done == "Done":
+        await ctx.respond("Cards have already been dealt. Use </info:1063888495875211334> to see the trump card")
+    elif deal_done == "Dealt":
         await ctx.respond("Cards have been dealt. Use </info:1063888495875211334> to see the trump card")
-    elif deal_done == "NotEnough":
+    elif deal_done == "NotEnoughPlayers":
         await ctx.respond(f"More people need to join the game. Currently only {len(players[0])} have joined")
-    elif deal_done == "Nope":
-        await ctx.respond(f"You aren't the designed dealer of this game. <@{players[0][0]}> is the dealer")
+    elif deal_done == "NotOwner":
+        await ctx.respond(f"You aren't the designated dealer of this game. <@{players[0][0]}> is the dealer")
     else:
         await ctx.respond("If you see this error, please DM Notorious#1472 immediately")
 

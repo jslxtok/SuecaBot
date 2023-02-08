@@ -51,18 +51,35 @@ async def dealing(game_id: str, player: str) -> str:
     trump_card = shuffled_cards[1]
     players = await player_info(game_id)
     lst_of_players = []
-    for player in players[0]:
-        lst_of_players.append(player)
+
+
+    for p in players[0]:
+        lst_of_players.append(p)
     if player != lst_of_players[0]:
         return "NotOwner"
     elif len(lst_of_players) != 4:
         return "NotEnoughPlayers"
+    elif players[1][0] is not None:
+        return "Done"
     else:
+        sets_of_cards = [shuffled_cards[i::4] for i in range(4)]
         async with db_funcs.bot.d.conn.cursor() as cursor:
             for i in range(4):
-                await cursor.execute(f"UPDATE {game_id} set cards = ?, trump_card = ? WHERE userid = ?", (shuffled_cards[i:i+10], trump_card, lst_of_players[i]))
-        await db_funcs.d.conn.commit()
+                await cursor.execute(f"UPDATE {game_id} set cards = ?, trump_card = ? WHERE userid = ?", (' '.join(map(str, sets_of_cards[i])), trump_card, lst_of_players[i]))
+        await db_funcs.bot.d.conn.commit()
         return "Dealt"
+
+
+async def cards_view(game_id: str, player: str) -> str:
+    async with db_funcs.bot.d.conn.cursor() as cursor:
+        await cursor.execute(f"SELECT cards FROM {game_id} WHERE userid = ?", (player,))
+        rows = await cursor.fetchone()
+    cards = rows[0]
+    if cards is None:
+        return "None"
+    else:
+        cards_list = cards.split(" ")
+        return cards_list
 
 
 def load(bot: lightbulb.BotApp) -> None:

@@ -1,5 +1,5 @@
 import lightbulb
-import SuecaBot.utils.dbhelpers
+import SuecaBot.database.dbfuncs
 
 
 player_cmds = lightbulb.Plugin("Player Commands", "Commands for players to use")
@@ -10,7 +10,7 @@ player_cmds = lightbulb.Plugin("Player Commands", "Commands for players to use")
 @lightbulb.command("cards", "View your cards", auto_defer=True, ephemeral=True)
 @lightbulb.implements(lightbulb.SlashCommand)
 async def on_card_view(ctx: lightbulb.SlashContext) -> None:
-    cards = await SuecaBot.utils.dbhelpers.cards_view(id=ctx.options.id, player=str(ctx.member.id))
+    cards = await SuecaBot.database.dbfuncs.cards_view(game_id=ctx.options.id, player=str(ctx.member.id))
     if cards == "None":
         await ctx.respond("Cards have not been dealt yet")
     else:

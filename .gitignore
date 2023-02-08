@@ -3,6 +3,7 @@ SuecaBot/database/games.db
 .env
 .vscode
 *.pyc
-.DS_Stor
+.DS_Store
 .idea
-.toml
+.dockerignore
+fly.toml
